@@ -1,0 +1,60 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devsec_api_app
+    ports:
+      - "8090:8090"
+    volumes:
+      - .:/src
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=devsec_db;Username=postgres;Password=mysecretpassword
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: dockerhub.timeweb.cloud/library/postgres:18-alpine
+    container_name: devsec_api_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: devsec_db
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d devsec_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dh-mirror.gitverse.ru/dpage/pgadmin4
+    container_name: devsec_api_pgadmin
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com       
+      PGADMIN_DEFAULT_PASSWORD: admin  
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False" 
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
+    volumes:
+      - ./pgadmin_servers.json:/pgadmin4/servers.json
+    entrypoint: >
+      /bin/sh -c "
+      echo 'db:5432:devsec_db:postgres:mysecretpassword' > /tmp/pgpass &&
+      chmod 600 /tmp/pgpass &&
+      /entrypoint.sh"      
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
