@@ -1,8 +1,44 @@
-# Тестовое задание: Dev-Sec-Rest-Api-Json
+Реализация REST API на **.NET Core** для парсинга HTML, дешифрования AES-256-ECB, валидации и работы с PostgreSQL. Проект готов к развертыванию через Docker Compose.
 
-Реализация REST API функции для парсинга HTML, дешифрования данных и валидации входящих объектов.
+---
 
-## Обоснование использования асинхронности в REST API (Пункт 12 задания)
+## 🚀 Быстрый запуск
+
+1. Клонируйте репозиторий:
+      ```bash
+   git clone https://github.com
+   cd Dev-Sec-Rest-Api-Json
+   ```
+2. Запустите проект:
+   ```bash
+   docker compose up --build
+   ```
+---
+
+## 🗺️ Доступные сервисы
+
+* **Swagger UI:** [http://localhost:8090/api/swagger](http://localhost:8090/api/swagger)
+* **Веб-сервер API:** [http://localhost:8090](http://localhost:8090)
+* **PgAdmin 4:** [http://localhost:8080](http://localhost:8080)
+
+---
+
+## 🧪 Проверка работы API
+
+Используйте файлы `json_payload_1.txt` и `json_payload_2.txt` для отправки POST-запросов через Swagger, а затем сверьте результаты с `json_result_1.txt` и проверьте данные в PgAdmin.
+
+---
+
+## 📂 Структура проекта
+
+* **DevSecApi.API** — веб-слой (контроллеры, Swagger, DI).
+* **DevSecApi.Application** — бизнес-логика и валидация.
+* **DevSecApi.Domain** — доменные сущности.
+* **DevSecApi.Infrastructure** — работа с БД и репозитории.
+
+---
+
+## Обоснование использования асинхронности в REST API 
 
 ### 1. Польза от использования асинхронных функций в REST API
 Основная цель асинхронности в веб-сервере  — масштабируемость и высокая пропускная способность под высокой нагрузкой.
